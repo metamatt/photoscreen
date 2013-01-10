@@ -1,17 +1,32 @@
-$(document).ready(function() {
-    var $list = $('#photo_list');
-    $.get('/api/photos', function(data) {
-        for (var i = 0; i < data.list.length; i++) {
-            var digest = data.list[i];
-            var $item = '<li><a href="#">' + digest + '</a></li>';
-            $list.append($item);
+function PhotoListCtrl($scope, $http) {
+    $scope.photos = [];
+    $scope.current = 0;
+    $http.get('/api/photos').success(function(data) {
+        var digests = data.list;
+        for (var i = 0; i < digests.length; i++) {
+            var photo = { thumb: '/api/photos/' + digests[i], rating: 0 };
+            $scope.photos.push(photo);
         }
-        $list.click(function(e) {
-            e.preventDefault();
-            var digest = e.srcElement.innerText;
-            var $img = $('<img/>').attr('src', '/api/photos/' + digest);
-            var $thumb = $('#selection');
-            $thumb.html($img);
-        });
-    }); 
-});
+    });
+
+    document.onkeydown = function(event) {
+        switch (event.keyIdentifier) {
+            case "Left":
+                if ($scope.current > 0) {
+                    $scope.$apply($scope.current -= 1);
+                }
+                break;
+            case "Right":
+                if ($scope.current < $scope.photos.length - 1) {
+                    $scope.$apply($scope.current += 1);
+                }
+                break;
+            case "Up":
+                $scope.$apply($scope.photos[$scope.current].rating++);
+                break;
+            case "Down":
+                $scope.$apply($scope.photos[$scope.current].rating--);
+                break;
+        }
+    }
+}

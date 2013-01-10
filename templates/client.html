@@ -2,13 +2,19 @@
    <head>
       <link rel="stylesheet" href="/static/client.css">
       <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
       <script src="/static/client.js"></script>
       <title>photoscreen</title>
    </head>
 
-   <body>
+   <body ng-app>
       <h1>photoscreen</h1>
-      <ul id='photo_list'></ul>
-      <div id='selection'></div>
+      <div id='photo_list' ng-controller="PhotoListCtrl">
+         {{ current + 1 }} of {{ photos.length }}: (left/right to change)
+         <br />
+         <img src="{{ photos[current].thumb }}" />
+         <br />
+         rating: {{ photos[current].rating }} (up/down to change)
+      </div>
    </body>
 </html>

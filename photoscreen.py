@@ -10,8 +10,14 @@ import flask
 # private libs
 import database
 
+# XXX trick jinja into not tripping over {{ intended for angular.js.
+# This is easier than telling flask to serve a static file via routing
+# handler without using render_template.
+class CustomFlask(flask.Flask):
+    jinja_options = flask.Flask.jinja_options.copy()
+    jinja_options.update({ 'variable_start_string': '{{{' });
 
-app = flask.Flask(__name__)
+app = CustomFlask(__name__)
 db = database.Database()
 render_template = flask.render_template
 
