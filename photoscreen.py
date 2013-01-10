@@ -34,7 +34,11 @@ def api_photos_enum():
 @app.route('/api/photos/<digest>')
 def api_photos_get(digest):
    thumb_data = db.get_photo_data(digest)
-   return flask.Response(thumb_data, content_type = 'image/jpeg')
+   response = flask.Response(thumb_data, content_type = 'image/jpeg')
+   response.headers['Cache-Control'] = 'public; max-age=2592000'
+   response.headers['Last-Modified'] = 'Mon, 29 Jun 1998 02:28:12 GMT' # XXX hardcoded time way in the past
+   response.headers['Content-Length'] = len(thumb_data)
+   return response
 
 def start():
    app.run(debug = True)
