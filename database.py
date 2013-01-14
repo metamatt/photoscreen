@@ -13,26 +13,40 @@ class Database:
    def commit(self):
       self.conn.commit()
 
-   def add_photo(self, path, thumb, digest):
-      self.cursor.execute('INSERT INTO photos VALUES(?,?,?);', (digest, path, thumb))
+   # Photos
+   def get_photo_count(self):
+      self.cursor.execute('SELECT count(hash) from photos')
+      count = self.cursor.fetchone()[0]
+      return count
 
    def enum_photos(self):
       self.cursor.execute('SELECT hash FROM photos')
       rows = self.cursor.fetchall()
       return [r[0] for r in rows]
 
-   def get_photo_data(self, digest):
+   def add_photo(self, path, thumb, digest):
+      self.cursor.execute('INSERT INTO photos VALUES(?,?,?);', (digest, path, thumb))
+
+   def get_photo_thumbnail(self, digest):
       self.cursor.execute('SELECT thumbnail FROM photos WHERE hash = ?', (digest,))
       thumb_data = self.cursor.fetchone()[0]
       return thumb_data
 
-   def get_photo_count(self):
-      self.cursor.execute('SELECT count(hash) from photos')
-      count = self.cursor.fetchone()[0]
-      return count
+   def set_photo_rating(self, digest, username, rating):
+      self.cursor.execute('INSERT OR REPLACE INTO ratings VALUES(?,?,?)', (digest, username, rating))
 
+   def get_photo_ratings(self, digest):
+      self.cursor.execute('SELECT user, rating FROM ratings WHERE photo_hash = ?', (digest,))
+      ratings = {}
+      for row in self.cursor.fetchall():
+         ratings[row[0]] = row[1]
+      return ratings
+
+   # Directories
    def get_directory_count(self):
       return 1
+
+   # Ratings
 
 
 if __name__ == '__main__':

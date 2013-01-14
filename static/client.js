@@ -17,29 +17,54 @@ function PhotoStripCtrl($scope, $http) {
     $http.get('/api/photos').success(function(data) {
         var digests = data.list;
         for (var i = 0; i < digests.length; i++) {
-            var photo = { thumb: '/api/photos/' + digests[i] + '/thumbnail', rating: 0 };
+            var photo = { digest: digests[i], thumb: '/api/photos/' + digests[i] + '/thumbnail' };
+            (function(photo) {
+                $http.get('/api/photos/' + digests[i] + '/ratings').success(function(data) {
+                    photo.all_ratings = data;
+                    photo.my_rating = data['matt'] || 0;
+                });
+            })(photo);
             $scope.photos.push(photo);
         }
     });
 
+    constrain_to_range = function(value, lower, upper) {
+        return Math.max(lower, Math.min(upper, value));
+    }
+
+    change_selection = function(delta) {
+        $scope.current = constrain_to_range($scope.current + delta, 0, $scope.photos.length - 1);
+    }
+
+    change_rating = function(delta) {
+        var photo = $scope.photos[$scope.current];
+        var oldRating = photo.my_rating;
+        photo.my_rating = constrain_to_range(photo.my_rating + delta, -1, 1);
+        if (photo.my_rating != oldRating) {
+            $http.post('/api/photos/' + photo.digest + '/rate/' + photo.my_rating);
+        }
+    }
+
     document.onkeydown = function(event) {
+        var handled = true;
         switch (event.keyIdentifier) {
             case "Left":
-                if ($scope.current > 0) {
-                    $scope.$apply($scope.current -= 1);
-                }
+                change_selection(-1);
                 break;
             case "Right":
-                if ($scope.current < $scope.photos.length - 1) {
-                    $scope.$apply($scope.current += 1);
-                }
+                change_selection(+1);
                 break;
             case "Up":
-                $scope.$apply($scope.photos[$scope.current].rating++);
+                change_rating(+1);
                 break;
             case "Down":
-                $scope.$apply($scope.photos[$scope.current].rating--);
+                change_rating(-1);
                 break;
+            default:
+                handled = false;
+        }
+        if (handled) {
+            $scope.$digest();
         }
     }
 }
