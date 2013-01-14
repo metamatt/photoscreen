@@ -1,0 +1,19 @@
+<p>
+	<ng-pluralize count="num_photos" when="{ 'one': '1 photo', 'other': '{} photos' }"></ng-pluralize> in
+	<ng-pluralize count="num_directories" when="{ 'one': '1 directory', 'other': '{} directories' }"></ng-pluralize>.
+</p>
+
+<p>
+	Select
+	<input type='radio' name='mode' value='rated' />rated<br />
+	<input type='radio' name='mode' value='unrated' />unrated<br />
+	<input type='radio' name='mode' value='all' />all<br />
+	photos in
+	<input type='checkbox' name='subtree' value='or under' />or under<br />
+	directory
+	<input placeholder='/'>
+</p>
+
+<p>
+	<a href='/ratem/' ng-click='enterRater()'>Let's get started</a>
+</p>

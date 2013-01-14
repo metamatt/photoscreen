@@ -14,8 +14,8 @@ import database
 # This is easier than telling flask to serve a static file via routing
 # handler without using render_template.
 class CustomFlask(flask.Flask):
-    jinja_options = flask.Flask.jinja_options.copy()
-    jinja_options.update({ 'variable_start_string': '{{{' });
+   jinja_options = flask.Flask.jinja_options.copy()
+   jinja_options.update({ 'variable_start_string': '{{{' });
 
 app = CustomFlask(__name__)
 db = database.Database()
@@ -31,7 +31,7 @@ def api_photos_enum():
    #return '\n'.join(photos)
    return flask.jsonify(list=photos)
 
-@app.route('/api/photos/<digest>')
+@app.route('/api/photos/<digest>/thumbnail')
 def api_photos_get(digest):
    thumb_data = db.get_photo_data(digest)
    response = flask.Response(thumb_data, content_type = 'image/jpeg')
@@ -39,6 +39,13 @@ def api_photos_get(digest):
    response.headers['Last-Modified'] = 'Mon, 29 Jun 1998 02:28:12 GMT' # XXX hardcoded time way in the past
    response.headers['Content-Length'] = len(thumb_data)
    return response
+
+@app.route('/api/database')
+def api_database_get():
+   return flask.jsonify({
+      'photos' : db.get_photo_count(),
+      'directories' : db.get_directory_count()
+   })
 
 def start():
    app.run(debug = True)

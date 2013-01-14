@@ -26,6 +26,14 @@ class Database:
       thumb_data = self.cursor.fetchone()[0]
       return thumb_data
 
+   def get_photo_count(self):
+      self.cursor.execute('SELECT count(hash) from photos')
+      count = self.cursor.fetchone()[0]
+      return count
+
+   def get_directory_count(self):
+      return 1
+
 
 if __name__ == '__main__':
    import sys

@@ -7,14 +7,8 @@
       <title>photoscreen</title>
    </head>
 
-   <body ng-app>
+   <body ng-app="PhotoScreen" ng-controller="MainCtrl">
       <h1>photoscreen</h1>
-      <div id='photo_list' ng-controller="PhotoListCtrl">
-         {{ current + 1 }} of {{ photos.length }}: (left/right to change)
-         <br />
-         <img src="{{ photos[current].thumb }}" />
-         <br />
-         rating: {{ photos[current].rating }} (up/down to change)
-      </div>
+      <div ng-view></div>
    </body>
 </html>
